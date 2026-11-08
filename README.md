@@ -106,12 +106,6 @@ make all        # tests plus every pipeline stage
 
 ## Deploy
 
-The demo needs only `app/`, `src/animerec/` and `artifacts/demo/`, and `app/requirements.txt` holds its small runtime dependency list.
+The demo runs in Docker behind a Cloudflare Tunnel. `deploy/animerec-deploy.timer` checks GitHub every minute and rebuilds when `main` changes, so pushing to `main` deploys. Logs: `journalctl -u animerec-deploy`.
 
-**Streamlit Community Cloud**
-
-```bash
-gh repo create anime-recommender --public --source=. --push
-```
-
-Then create an app at [share.streamlit.io](https://share.streamlit.io) from that repository, with main file `app/streamlit_app.py` and Python 3.11. Credentials stay in your GitHub and Streamlit accounts.
+`docker compose up -d --build` runs the same image on any machine, serving on `127.0.0.1:3003`.

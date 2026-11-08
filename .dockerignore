@@ -1,0 +1,6 @@
+*
+!.streamlit
+!app
+!src/animerec
+!artifacts/demo
+**/__pycache__

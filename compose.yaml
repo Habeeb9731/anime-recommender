@@ -1,0 +1,9 @@
+services:
+  animerec:
+    build: .
+    image: animerec
+    container_name: animerec
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3003:8501"
+    mem_limit: 1g

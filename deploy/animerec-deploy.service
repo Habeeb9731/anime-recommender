@@ -1,0 +1,8 @@
+[Unit]
+Description=Deploy AnimeRec when GitHub main changes
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/animerec/deploy/auto_deploy.sh
