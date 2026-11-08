@@ -2,7 +2,7 @@
 
 A top-10 anime recommender that handles brand-new titles and brand-new visitors. It blends collaborative filtering with synopsis and metadata signals, was evaluated with a global time-based split against the full catalog, and ships as an instant Streamlit demo.
 
-**Demo:** not deployed yet. See [Deploy](#deploy) for the commands.
+**Demo:** [anime.abdulhabeeb.com](https://anime.abdulhabeeb.com)
 
 ## Problem
 
