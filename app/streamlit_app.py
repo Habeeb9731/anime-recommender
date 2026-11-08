@@ -62,6 +62,7 @@ b, strong { font-weight: 500 !important; }
 .brandmark { display: flex; justify-content: center; margin-bottom: .9rem; }
 .brandmark img { width: 32px; height: 32px; display: block; }
 .herorail { margin-top: -2rem; }
+.hero-logo { display: none; }
 .hero { position: relative; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden; background: #111; }
 .hero .blur { position: absolute; inset: -40px; background-size: cover; background-position: center 25%; filter: blur(30px) brightness(.55) saturate(1.2); }
 .hero .sharp { position: absolute; right: 0; top: 0; width: 72%; height: 100%; object-fit: cover; object-position: center 18%; -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 34%); mask-image: linear-gradient(90deg, transparent 0, #000 34%); }
@@ -94,16 +95,28 @@ b, strong { font-weight: 500 !important; }
 .empty { height: 11rem; }
 @media (max-width: 640px) {
   :root { --left: 1rem; }
-  .st-key-siderail { top: 0; bottom: auto; width: 100% !important; height: 58px; flex-direction: row; background: linear-gradient(180deg, rgba(0,0,0,.72), rgba(0,0,0,0)); }
-  .st-key-nav [role="radiogroup"], .st-key-nav [data-testid="stButtonGroup"] > div { flex-direction: row !important; }
-  .brandmark { margin: 0 .2rem 0 0; transform: translateY(-8px); }
+  .st-key-siderail { --cell: 36px; --cgap: 6px; top: auto; left: 0; right: 0; bottom: calc(.75rem + env(safe-area-inset-bottom)); width: fit-content !important; max-width: calc(100vw - 1rem); margin: 0 auto; height: 52px; flex-direction: row; justify-content: center; align-items: center; gap: var(--cgap); padding: 0 8px; background: #0b0b0b; border: 1px solid rgba(255,255,255,.1); border-radius: 999px; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
+  .block-container { padding-bottom: 6.5rem !important; }
+  .st-key-nav button { color: rgba(255,255,255,.86) !important; }
+  .st-key-nav button[aria-checked="true"] { box-shadow: none !important; background: #fff !important; border-radius: 50% !important; }
+  .st-key-nav button[aria-checked="true"] [role="img"], .st-key-nav button[aria-checked="true"] [data-testid="stIconMaterial"], .st-key-nav button[aria-checked="true"] p { color: #000 !important; }
+  .st-key-siderail button [role="img"], .st-key-siderail button [data-testid="stIconMaterial"] { font-variation-settings: "wght" 300 !important; font-weight: 300 !important; }
+  .st-key-pop_refine { position: relative; }
+  .st-key-pop_refine::before { content: ""; position: absolute; left: -3.5px; top: 9px; bottom: 9px; width: 1px; background: rgba(255,255,255,.2); }
+  .brandmark { display: none; }
+  .st-key-siderail > div:has(.brandmark) { display: none !important; }
+  .st-key-siderail > div, .st-key-pop_search, .st-key-pop_refine, .st-key-pop_search [data-testid="stPopover"], .st-key-pop_refine [data-testid="stPopover"], .st-key-pop_search [data-testid="stElementContainer"], .st-key-pop_refine [data-testid="stElementContainer"] { width: var(--cell) !important; min-width: var(--cell) !important; height: var(--cell); display: flex; align-items: center; justify-content: center; margin: 0 !important; }
   .st-key-siderail > .st-key-nav { width: max-content !important; min-width: max-content !important; flex: none !important; }
-  .st-key-siderail > div { width: 36px !important; min-width: 36px !important; }
-  .st-key-pop_search, .st-key-pop_refine, .st-key-pop_search [data-testid="stPopover"], .st-key-pop_refine [data-testid="stPopover"], .st-key-pop_search [data-testid="stElementContainer"], .st-key-pop_refine [data-testid="stElementContainer"] { width: 36px !important; min-width: 36px !important; }
+  .st-key-nav [role="radiogroup"], .st-key-nav [data-testid="stButtonGroup"], .st-key-nav [data-testid="stButtonGroup"] > div { width: max-content !important; gap: var(--cgap) !important; margin: 0 !important; align-items: center; }
+  .st-key-siderail button { width: var(--cell) !important; min-width: var(--cell) !important; height: var(--cell) !important; min-height: var(--cell) !important; flex: none !important; display: flex !important; align-items: center !important; justify-content: center !important; padding: 0 !important; }
+  .st-key-siderail button p, .st-key-siderail button span { font-size: 1.2rem !important; line-height: 1 !important; margin: 0 !important; }
+  .st-key-siderail button > div, .st-key-siderail button [data-testid="stMarkdownContainer"] { display: flex !important; align-items: center; justify-content: center; margin: 0 !important; }
+  .st-key-nav button [role="img"], .st-key-nav button [data-testid="stIconMaterial"] { position: relative; top: -4px; }  /* the icon font sits low in these buttons */
+  .hero-logo { display: block; position: absolute; z-index: 3; top: .85rem; left: 1rem; }
+  .hero-logo img { width: 34px; height: 34px; display: block; }
+  .st-key-nav [role="radiogroup"], .st-key-nav [data-testid="stButtonGroup"] > div { flex-direction: row !important; }
+  .st-key-siderail > .st-key-nav { width: max-content !important; min-width: max-content !important; flex: none !important; }
   .st-key-nav [role="radiogroup"], .st-key-nav [data-testid="stButtonGroup"] { width: max-content !important; }
-  .st-key-siderail { gap: 0; justify-content: flex-start; padding-left: .4rem; }
-  .st-key-siderail button { width: 36px !important; min-width: 36px !important; flex: none !important; }
-  .st-key-siderail button p, .st-key-siderail button span { font-size: 1.25rem !important; }
   .hero .inner { width: auto; right: 1rem; }
   .hero .sharp, .hero .sharp.banner { width: 100%; height: 60%; -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 40%); mask-image: linear-gradient(0deg, transparent 0, #000 40%); }
   .go { width: 200px; } .st-key-love { left: calc(1rem + 200px + .5rem); width: 136px !important; }
@@ -269,6 +282,7 @@ b, strong { font-weight: 500 !important; }
 .modal .pill { display: inline-block; font-size: .76rem; color: #fff; background: rgba(255,255,255,.12); border-radius: 999px; padding: .28rem .8rem; margin: 0 .35rem .35rem 0; }
 .modal .out { position: sticky; bottom: 1rem; z-index: 4; display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 1.6rem; border-radius: 999px; background: #fff; color: #000 !important; text-decoration: none !important; font-size: .95rem; font-weight: 500; }
 @media (max-width: 640px) { .modal { padding: 0; align-items: flex-end; } .modal .sheet { max-height: 92vh; border-radius: 22px 22px 0 0; } .modal .art { height: 190px; } .modal .body { padding: 0 1.1rem 1.3rem; } }
+@media (max-width: 380px) { .st-key-siderail { --cell: 30px; --cgap: 3px; padding: 0 6px; height: 46px; } .st-key-siderail button p, .st-key-siderail button span { font-size: 1.1rem !important; } }
 </style>
 """,
     unsafe_allow_html=True,
@@ -368,7 +382,7 @@ def hero(r: Recommendation, label: str, intro: bool = False) -> str:
     meta = " &nbsp;·&nbsp; ".join(x for x in [html.escape(r.type or ""), str(r.year) if r.year else "", rating, html.escape(", ".join(r.genres[:3]))] if x)
     go = f'<a class="go" href="#{modal_id(r)}">&#9432;&nbsp; More info</a>'
     return (
-        f'<div class="hero{" intro" if intro else ""}"><div class="blur" style="{bg}"></div>{sharp}<div class="inner"><div class="eyebrow">{label}{flag(r)}</div>'
+        f'<div class="hero{" intro" if intro else ""}"><div class="blur" style="{bg}"></div>{sharp}<div class="hero-logo">{logo_img()}</div><div class="inner"><div class="eyebrow">{label}{flag(r)}</div>'
         f'<h2>{html.escape(r.title)}</h2><div class="meta">{meta}</div><div class="why">{html.escape(r.explanation)}</div>'
         f'<div class="syn">{html.escape(r.synopsis)}</div>{go}</div></div>'
     )
