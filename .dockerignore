@@ -3,4 +3,5 @@
 !app
 !src/animerec
 !artifacts/demo
+!deploy/brand_static.py
 **/__pycache__

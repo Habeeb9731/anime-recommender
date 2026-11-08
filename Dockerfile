@@ -9,6 +9,8 @@ COPY .streamlit .streamlit
 COPY app app
 COPY src/animerec src/animerec
 COPY artifacts/demo artifacts/demo
+COPY deploy/brand_static.py deploy/brand_static.py
+RUN python deploy/brand_static.py
 
 USER nobody
 ENV HOME=/tmp
