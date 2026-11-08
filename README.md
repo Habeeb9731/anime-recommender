@@ -108,4 +108,4 @@ make all        # tests plus every pipeline stage
 
 The demo runs in Docker behind a Cloudflare Tunnel. `deploy/animerec-deploy.timer` checks GitHub every minute and rebuilds when `main` changes, so pushing to `main` deploys. Logs: `journalctl -u animerec-deploy`.
 
-`docker compose up -d --build` runs the same image on any machine, serving on `127.0.0.1:3003`.
+`docker compose up -d --build` runs the same image on any machine, serving on `127.0.0.1:3010`.

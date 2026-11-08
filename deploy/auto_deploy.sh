@@ -17,7 +17,7 @@ git merge --ff-only --quiet origin/main
 docker compose up -d --build --remove-orphans
 
 for _ in $(seq 1 30); do
-  if curl -fsS --max-time 3 http://127.0.0.1:3003/_stcore/health >/dev/null; then
+  if curl -fsS --max-time 3 http://127.0.0.1:3010/_stcore/health >/dev/null; then
     echo "Deployed ${remote_rev:0:7}"
     docker image prune -f >/dev/null
     exit 0
