@@ -95,6 +95,11 @@ def test_filters(demo):
     assert {x.title for x in demo.recommend(liked=["Alpha"], new_only=True).items} == {"Zeta", "Fresh"}
 
 
+def test_excluded_genres_never_appear(demo):
+    r = demo.recommend(liked=["Alpha"], exclude_genres=["Drama"], k=8)
+    assert r.items and all("Drama" not in x.genres for x in r.items)
+
+
 def test_filters_with_no_match_give_a_message(demo):
     r = demo.recommend(liked=["Alpha"], genres=["Comedy"], types=["Movie"])
     assert r.items == [] and "filters" in r.message

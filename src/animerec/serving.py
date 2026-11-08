@@ -19,6 +19,9 @@ import scipy.sparse as sp
 from .models import ALS, ContentCentroid, ContentToCF, Hybrid, Popularity, Recommender
 
 
+DETAIL_FIELDS = ["title_japanese", "episodes", "duration", "age_rating", "aired", "source", "studios_text", "premiered", "synopsis_full"]
+
+
 @dataclass
 class SparseEASE:
     """EASE with each item's weights truncated to the strongest neighbours."""
@@ -63,6 +66,7 @@ class Recommendation:
     cover_url: str | None = None
     mal_id: int | None = None
     banner_url: str | None = None
+    details: dict[str, Any] = field(default_factory=dict)
     rating: float | None = None
 
 
@@ -106,6 +110,8 @@ class DemoRecommender:
         self.mal_ids = items["anime_id"].to_list() if "anime_id" in items.columns else [None] * self.n
         self.ratings = items["display_score"].to_list() if "display_score" in items.columns else [None] * self.n
         self.banners = items["banner_url"].to_list() if "banner_url" in items.columns else [None] * self.n
+        cols = [c for c in DETAIL_FIELDS if c in items.columns]
+        self.details = items.select(cols).to_dicts() if cols else [{} for _ in range(self.n)]
         self.covers = items["cover_url"].to_list() if "cover_url" in items.columns else [None] * self.n
         self._by_title = {t.lower(): i for i, t in reversed(list(enumerate(self.titles)))}
         for i, t in reversed(list(enumerate(items["title"].to_list()))):
@@ -147,8 +153,12 @@ class DemoRecommender:
         year_range: tuple[int, int] | None,
         types: list[str] | None,
         new_only: bool,
+        exclude_genres: list[str] | None = None,
     ) -> np.ndarray:
         mask = np.ones(self.n, dtype=bool)
+        if exclude_genres:
+            banned = set(exclude_genres)
+            mask &= np.fromiter((not (banned & set(g)) for g in self.genres), bool, self.n)
         if genres:
             wanted = set(genres)
             mask &= np.fromiter((bool(wanted & set(g)) for g in self.genres), bool, self.n)
@@ -208,6 +218,7 @@ class DemoRecommender:
         new_only: bool = False,
         k: int = 10,
         include_same_franchise: bool = False,
+        exclude_genres: list[str] | None = None,
     ) -> RecommendationResult:
         liked_idx, unknown_l = self.resolve(liked)
         disliked_idx, unknown_d = self.resolve(disliked)
@@ -220,7 +231,7 @@ class DemoRecommender:
         else:
             s = np.log1p(self.recent_counts.astype(np.float64))
 
-        mask = self._candidates(genres, year_range, types, new_only)
+        mask = self._candidates(genres, year_range, types, new_only, exclude_genres)
         mask[liked_idx + disliked_idx] = False
         order = np.argsort(-s, kind="stable")
         order = order[mask[order]]
@@ -238,7 +249,7 @@ class DemoRecommender:
                 Recommendation(
                     item_idx=i, title=self.titles[i], genres=self.genres[i], year=int(y) if y is not None else None,
                     type=self.types[i], explanation=self.explain(i, liked_idx), is_cold=bool(self.is_cold[i]),
-                    is_new=bool(self.is_new[i]), score=float(s[i]), synopsis=self.synopses[i] or "", cover_url=self.covers[i], banner_url=self.banners[i], mal_id=self.mal_ids[i], rating=self.ratings[i],
+                    is_new=bool(self.is_new[i]), score=float(s[i]), synopsis=self.synopses[i] or "", cover_url=self.covers[i], banner_url=self.banners[i], details=self.details[i], mal_id=self.mal_ids[i], rating=self.ratings[i],
                 )
             )
             if len(out) == k:

@@ -2,7 +2,7 @@
 PY ?= .venv/bin/python
 export PYTHONPATH := src
 
-.PHONY: setup data train banners evaluate report test app all clean
+.PHONY: setup data train banners details evaluate report test app all clean
 
 setup:
 	uv venv --python 3.11 .venv
@@ -17,6 +17,9 @@ train:
 banners:
 	$(PY) scripts/add_banners.py
 
+details:
+	$(PY) scripts/add_details.py
+
 evaluate:
 	$(PY) scripts/evaluate.py
 
@@ -29,7 +32,7 @@ test:
 app:
 	$(PY) -m streamlit run app/streamlit_app.py
 
-all: test data train banners evaluate report
+all: test data train banners details evaluate report
 
 # Removes all derived files. Raw downloads in data/raw are kept.
 clean:

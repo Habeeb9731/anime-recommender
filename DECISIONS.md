@@ -48,4 +48,6 @@ The newer crawl looked ideal because it has synopses and a `last_interaction_dat
 - **Community scores appear on cards for display only.** They are loaded while exporting the demo bundle, stay out of the catalog, and never reach a model.
 - **Same-franchise titles are hidden by default**, with a checkbox to allow sequels.
 - **Disliked titles** get negative weight in fold-in and are excluded from results.
+- **Cards open an info popup first**, built from dataset fields added by `scripts/add_details.py`. Details are display-only, and the link to MyAnimeList sits inside the popup.
+- **Onboarding answers persist in the visitor's browser** through local storage and the page URL, with no server-side storage, so a refresh or return visit skips onboarding. **Retake preferences** clears them.
 - **The demo model is the evaluated model**: fit on activity before 2018-02-01. It is not refit on later data, so what it serves matches what was tested.
