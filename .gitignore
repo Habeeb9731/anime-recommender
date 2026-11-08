@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+# data and credentials are never committed
+data/
+.env
+kaggle.json
+*.token
+# intermediate training outputs (the small demo bundle in artifacts/demo IS committed)
+artifacts/*
+!artifacts/demo/
+!artifacts/demo/**

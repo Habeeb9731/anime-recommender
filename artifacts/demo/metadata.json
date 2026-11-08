@@ -1,0 +1,16 @@
+{
+  "snapshot": "February 2018",
+  "fit_end": "2018-02-01 00:00:00",
+  "text_dim": 384,
+  "n_titles": 10720,
+  "frozen_config_hash": "87fcdde82d0bc3a0",
+  "hybrid": {
+    "cf": "ease",
+    "content": "content_to_cf",
+    "kappa": 1.0,
+    "cold_bias": 6.0,
+    "pop_weight": 1.0,
+    "als_regularization": 100,
+    "als_alpha": 10
+  }
+}

@@ -1,0 +1,82 @@
+# Central configuration. Every script reads this file; nothing is hard-coded elsewhere.
+seed: 42
+
+paths:
+  raw_dir: data/raw
+  interactions_zip: data/raw/azathoth_myanimelist.zip
+  synopsis_zip: data/raw/svanoo_myanimelist.zip
+  processed_dir: data/processed
+  artifacts_dir: artifacts
+  demo_dir: artifacts/demo
+  reports_dir: reports
+  figures_dir: reports/figures
+
+sources:
+  interactions_dataset: azathoth42/myanimelist
+  synopsis_dataset: svanoo/myanimelist-dataset
+
+data:
+  # Crawl tails off in May 2018; the partial last month is excluded.
+  min_valid_ts: "2004-11-05"       # MyAnimeList launch
+  study_end: "2018-05-01"
+  user_sample: 100000              # users kept after cleaning, seeded
+  excluded_types: [Music, Unknown]
+  excluded_genres: [Hentai]
+  min_synopsis_chars: 40
+  bots:
+    max_list_size: 5000
+    bulk_min_rows: 20
+    bulk_second_share: 0.5         # share of a user's rows sharing one exact second
+    flat_min_rated: 50             # rated titles needed before flat scoring counts as bot-like
+    max_completed_per_day: 100
+
+split:
+  val_start: "2017-11-01"
+  test_start: "2018-02-01"
+  test_end: "2018-05-01"
+
+target:
+  threshold: 7
+  use_user_mean: true
+
+evaluation:
+  k: 10
+  little_history_max: 5
+  val_user_cap: 15000
+  bootstrap_samples: 2000
+
+content:
+  model: sentence-transformers/all-MiniLM-L6-v2
+  top_studios: 150
+  year_bucket: 5
+  block_weights: {text: 1.0, genre: 1.0, studio: 0.3, type: 0.3, year: 0.3}
+
+# Validation grids, searched coordinate-wise in scripts/train.py
+tuning:
+  recent_days: [30, 90, 180, 365]
+  train_targets:
+    - {threshold: 6, use_user_mean: true}
+    - {threshold: 7, use_user_mean: true}
+    - {threshold: 8, use_user_mean: true}
+    - {threshold: 9, use_user_mean: true}
+    - {threshold: 7, use_user_mean: false}
+    - {any_completed: true}
+  dropped_weight: [0.0, 0.5, 1.0]
+  decay_days: [null, 90, 180, 365, 730]
+  ease_l2: [100, 300, 1000, 3000]
+  als_factors: [16, 32, 64, 128]
+  als_regularization: [10, 100, 500, 2000]
+  als_alpha: [1, 10, 40]
+  als_iterations: 12
+  content_block_weights:
+    - {text: 1.0, genre: 1.0, studio: 0.3, type: 0.3, year: 0.3}
+    - {text: 1.0, genre: 0.5, studio: 0.1, type: 0.1, year: 0.1}
+    - {text: 0.5, genre: 1.0, studio: 0.5, type: 0.5, year: 0.5}
+  content_to_cf_l2: [1, 10, 100]
+  hybrid_kappa: [1, 5, 20, 100, 500]
+  hybrid_cold_bias: [0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 14.0, 18.0]
+  hybrid_pop_weight: [0.0, 0.5, 1.0, 2.0, 4.0]
+
+demo:
+  ease_neighbors: 200
+  new_title_days: 365

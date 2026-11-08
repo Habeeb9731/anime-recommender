@@ -1,0 +1,15 @@
+numpy<2.3
+scipy
+pandas
+polars
+pyarrow
+scikit-learn
+matplotlib
+pyyaml
+requests
+tqdm
+implicit
+sentence-transformers
+torch
+streamlit
+pytest
