@@ -1,4 +1,7 @@
-"""Replace Streamlit's boot page branding, so the first frame a visitor sees is ours.
+"""Replace Streamlit's boot page branding, so the first frame a visitor sees is ours, and add the chat widget.
+
+The widget (app/assets/ask) is inlined here rather than rendered by the app, so it sits outside Streamlit's
+React tree and keeps its conversation across every rerun.
 
 Runs while the Docker image is built. Safe to run more than once.
 """
@@ -25,8 +28,8 @@ body:has(.hero, .ob-head, .ob-loader, [data-testid="stAlert"]) #brand-splash { o
 </style>"""
 
 
-def brand_html(html: str, logo_svg: bytes) -> str:
-    """Return the boot page with our title, background and splash screen."""
+def brand_html(html: str, logo_svg: bytes, widget: tuple[str, str] | None = None) -> str:
+    """Return the boot page with our title, background, splash screen and, if given, the chat widget (css, js)."""
     if MARKER in html:
         return html
     tag = f"<title>{TITLE}</title>"
@@ -35,7 +38,12 @@ def brand_html(html: str, logo_svg: bytes) -> str:
     html = html.replace("</head>", f"{meta}{BOOT}</head>", 1)
     data = base64.b64encode(logo_svg).decode()
     splash = f'<div id="brand-splash"><img src="data:image/svg+xml;base64,{data}" alt="AnimeRec"></div>'
-    return re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + splash, html, count=1)
+    html = re.sub(r"(<body[^>]*>)", lambda m: m.group(1) + splash, html, count=1)
+    if widget:
+        css, js = widget
+        html = html.replace("</head>", f'<style id="ask-widget">{css}</style></head>', 1)
+        html = html.replace("</body>", f"<script>{js}</script></body>", 1)
+    return html
 
 
 def main() -> None:
@@ -44,7 +52,9 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     static = Path(streamlit.__file__).parent / "static"
     index = static / "index.html"
-    index.write_text(brand_html(index.read_text(), (root / "app" / "assets" / "logo_mark.svg").read_bytes()))
+    ask = root / "app" / "assets" / "ask"
+    widget = ((ask / "ask.css").read_text(), (ask / "ask.js").read_text())
+    index.write_text(brand_html(index.read_text(), (root / "app" / "assets" / "logo_mark.svg").read_bytes(), widget))
     shutil.copy(root / "app" / "assets" / "favicon.png", static / "favicon.png")
     manifest = static / "manifest.json"
     if manifest.exists():

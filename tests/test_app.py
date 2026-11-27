@@ -136,6 +136,7 @@ def fresh(bundle, monkeypatch) -> AppTest:
     at = AppTest.from_file(APP, default_timeout=30)
     at.run()
     assert not at.exception
+    press(at, "ob_mode_manual")
     return at
 
 
@@ -204,7 +205,7 @@ def test_corrupt_saved_answers_fall_back_to_onboarding(bundle, monkeypatch):
     at.query_params["p"] = "not-valid!!"
     at.run()
     assert not at.exception
-    assert "What do you like to watch?" in page(at)
+    assert "How do you want to start?" in page(at)
 
 
 def test_finishing_saves_answers_in_the_url(fresh):
@@ -216,6 +217,7 @@ def test_loading_screen_shows_after_last_question(bundle, monkeypatch):
     monkeypatch.setenv("ANIMEREC_DEMO_DIR", str(bundle))
     monkeypatch.setenv("ANIMEREC_LOADER_SECONDS", "0")
     at = AppTest.from_file(APP, default_timeout=30)
+    at.session_state["ob_mode"] = "manual"
     at.session_state["ob_step"] = 3
     at.run()
     press(at, "ob_next")
@@ -264,7 +266,43 @@ def test_popup_has_details_and_a_redirect_button(app):
 
 def test_retake_returns_to_onboarding(app):
     press(app, "retake")
-    assert "What do you like to watch?" in page(app)
+    assert "How do you want to start?" in page(app)
+
+
+@pytest.fixture
+def start(bundle, monkeypatch) -> AppTest:
+    monkeypatch.setenv("ANIMEREC_DEMO_DIR", str(bundle))
+    at = AppTest.from_file(APP, default_timeout=30)
+    at.run()
+    assert not at.exception
+    return at
+
+
+def test_onboarding_starts_with_a_choice(start):
+    text = page(start)
+    assert "How do you want to start?" in text and "Describe it" in text and "Step by step" in text
+    assert "Popular right now" not in text
+    assert "None" not in text
+
+
+def test_ai_onboarding_screen_has_the_text_box_mount(start):
+    press(start, "ob_mode_ai")
+    text = page(start)
+    assert "What are you in the mood for?" in text
+    assert 'class="ai-ob-mount"' in text
+
+
+def test_ai_onboarding_goes_back_to_the_choice(start):
+    press(start, "ob_mode_ai")
+    assert not any(b.key == "ob_skip" for b in start.button)
+    press(start, "ob_back")
+    assert "How do you want to start?" in page(start)
+
+
+def test_manual_first_step_can_go_back_to_the_choice(start):
+    press(start, "ob_mode_manual")
+    press(start, "ob_back")
+    assert "How do you want to start?" in page(start)
 
 
 def test_dataset_text_is_escaped(app):

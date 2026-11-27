@@ -283,7 +283,29 @@ b, strong { font-weight: 500 !important; }
 .modal .out { position: sticky; bottom: 1rem; z-index: 4; display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 1.6rem; border-radius: 999px; background: #fff; color: #000 !important; text-decoration: none !important; font-size: .95rem; font-weight: 500; }
 @media (max-width: 640px) { .modal { padding: 0; align-items: flex-end; } .modal .sheet { max-height: 92vh; border-radius: 22px 22px 0 0; } .modal .art { height: 190px; } .modal .body { padding: 0 1.1rem 1.3rem; } }
 @media (max-width: 380px) { .st-key-siderail { --cell: 30px; --cgap: 3px; padding: 0 6px; height: 46px; } .st-key-siderail button p, .st-key-siderail button span { font-size: 1.1rem !important; } }
-</style>
+.st-key-ob_modes { max-width: 760px; margin: 1.8rem auto .4rem; padding: 0 1.2rem; }
+.st-key-ob_modes [data-testid="stHorizontalBlock"] { gap: 1rem; }
+.st-key-ob_modes [data-testid="stColumn"] { position: relative; animation: ob-rise .5s .15s cubic-bezier(.2,.8,.2,1) both; }
+.st-key-ob_modes [data-testid="stColumn"]:nth-child(2) { animation-delay: .22s; }
+.st-key-ob_modes [data-testid="stColumn"] div:not(.ob-mode) { position: static !important; }
+.ob-mode { display: flex; flex-direction: column; gap: .45rem; min-height: 190px; padding: 1.5rem 1.4rem; border: 1px solid rgba(255,255,255,.16); border-radius: 22px; background: rgba(18,18,18,.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+.ob-mode.is-ai { background: radial-gradient(120% 80% at 100% 0%, rgba(229,9,20,.28), transparent 60%), rgba(18,18,18,.72); }
+.st-key-ob_modes [data-testid="stColumn"]:hover .ob-mode { transform: translateY(-4px); border-color: rgba(255,255,255,.42); }
+.ob-mode-icon { width: 30px; height: 30px; margin-bottom: .4rem; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.ob-mode b { color: #fff; font-size: 1.2rem; font-weight: 500 !important; display: flex; align-items: center; gap: .55rem; }
+.ob-mode > span:last-child { color: rgba(255,255,255,.7); font-size: .92rem; line-height: 1.45; }
+.ob-tag { font-size: .68rem; font-weight: 500; color: #000; background: #fff; border-radius: 999px; padding: .12rem .5rem; }
+.st-key-ob_modes button { position: static !important; height: 0 !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; overflow: hidden; opacity: 0; }
+.st-key-ob_modes button::before { content: ""; position: absolute; inset: 0; z-index: 3; cursor: pointer; }
+.st-key-ob_modes button:focus-visible::before { outline: 2px solid #fff; outline-offset: 2px; border-radius: 22px; }
+@media (max-width: 640px) { .st-key-ob_modes [data-testid="stHorizontalBlock"] { flex-direction: column; } .ob-mode { min-height: 0; } }
+.stApp:has(.ob-head.is-ai)::before { background-image: radial-gradient(70% 45% at 50% 108%, rgba(229,9,20,.5), rgba(120,0,8,.2) 45%, transparent 75%), linear-gradient(180deg, rgba(0,0,0,.9) 0%, rgba(0,0,0,.78) 30%, rgba(0,0,0,.82) 65%, rgba(0,0,0,.94) 100%), linear-gradient(rgba(150,0,10,.42), rgba(150,0,10,.42)), var(--ai-bg, none); background-size: cover; background-position: center; background-blend-mode: normal, normal, multiply, normal; filter: saturate(.85); animation: ob-drift 30s ease-in-out infinite alternate; inset: -6%; }
+.ob-head.is-ai { padding-top: 4.5rem; }
+.ob-head.is-ai .ob-brand { margin-bottom: 2.6rem; }
+.ob-head.is-ai .ai-hi { color: rgba(255,255,255,.42); font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 500; letter-spacing: -.02em; margin: 0 0 .1rem; animation: ob-rise .6s .08s cubic-bezier(.2,.8,.2,1) both; }
+.ob-head.is-ai h1 { font-size: clamp(1.9rem, 3.4vw, 2.7rem); margin-bottom: .8rem; }
+.ob-head.is-ai p:last-child { color: rgba(255,255,255,.5); font-size: .92rem; line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { </style>
 """,
     unsafe_allow_html=True,
 )
@@ -585,6 +607,7 @@ def ob_retake() -> None:
     ss = st.session_state
     ss["onboarded"] = False
     ss["ob_step"] = 0
+    ss["ob_mode"] = None
     ss["ob_forget"] = True
     st.query_params.pop("p", None)
 
@@ -596,9 +619,85 @@ def onboarding_background() -> None:
         st.markdown(f"<style>:root {{ --ob-bg: url('{url}'); }}</style>", unsafe_allow_html=True)
 
 
+def ob_set_mode(mode: str | None) -> None:
+    st.session_state["ob_mode"] = mode
+    st.session_state["ob_step"] = 0
+
+
+def ob_storage_script() -> None:
+    """A returning visitor on the bare URL is sent back to their saved answers; Retake clears them."""
+    if st.session_state.pop("ob_forget", False):
+        browser_script(f"parent.localStorage.removeItem('{STORAGE_KEY}');")
+    else:
+        browser_script(
+            # The sandboxed frame cannot navigate, so the redirect runs in the page itself.
+            "const d=parent.document,e=d.createElement('script');"
+            f"e.textContent=\"(()=>{{const s=localStorage.getItem('{STORAGE_KEY}'),q=new URLSearchParams(location.search);"
+            "if(s&&!q.get('p')){q.set('p',s);location.search=q.toString();}})()\";d.head.appendChild(e);"
+        )
+
+
+OB_ICON_AI = '<path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"/><path d="M18.5 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>'
+OB_ICON_MANUAL = '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>'
+
+
+def render_ob_start() -> None:
+    """First screen: describe your taste to the AI, or answer the questions step by step."""
+    st.markdown(
+        f'<div class="ob-head"><div class="ob-brand">{logo_img()}AnimeRec</div>'
+        "<h1>How do you want to start?</h1><p>Two ways to tell us your taste. Both take under a minute.</p></div>",
+        unsafe_allow_html=True,
+    )
+    cards = [
+        ("ai", OB_ICON_AI, "Describe it", "Tell our AI what you love in your own words: shows, genres, the mood you're in.", "Fastest"),
+        ("manual", OB_ICON_MANUAL, "Step by step", "Pick genres and titles you've loved from posters, one short question at a time.", ""),
+    ]
+    with st.container(key="ob_modes"):
+        cols = st.columns(2)
+        for col, (mode, icon, title, text, tag) in zip(cols, cards):
+            badge = f'<span class="ob-tag">{tag}</span>' if tag else ""
+            col.markdown(
+                f'<div class="ob-mode{" is-ai" if mode == "ai" else ""}"><svg class="ob-mode-icon" viewBox="0 0 24 24" aria-hidden="true">{icon}</svg>'
+                f"<b>{title}{badge}</b><span>{text}</span></div>",
+                unsafe_allow_html=True,
+            )
+            col.button(title, key=f"ob_mode_{mode}", on_click=ob_set_mode, args=(mode,), use_container_width=True)
+
+
+def ai_background() -> None:
+    """Anime collage behind the AI onboarding, under a black and red overlay."""
+    path = ROOT / "app" / "assets" / "ai_bg.jpg"
+    if path.exists():
+        data = base64.b64encode(path.read_bytes()).decode()
+        st.markdown(f"<style>:root {{ --ai-bg: url('data:image/jpeg;base64,{data}'); }}</style>", unsafe_allow_html=True)
+
+
+def render_ob_ai() -> None:
+    """AI onboarding. The text box, the call to /api/ask and the result are drawn by app/assets/ask/ask.js in the
+    visitor's own browser, so its per-visitor limits apply; this only lays out the screen."""
+    ai_background()
+    st.markdown(
+        f'<div class="ob-head is-ai"><div class="ob-brand">{logo_img()}AnimeRec</div>'
+        '<p class="ai-hi">Hi there</p><h1>What are you in the mood for?</h1>'
+        "<p>Tell me shows you loved, genres you like or skip, the vibe you're after.<br>I'll find your picks from 10,720 titles.</p></div>"
+        '<div class="ai-ob-mount"></div>',
+        unsafe_allow_html=True,
+    )
+    with st.container(key="ob_actions"):
+        st.columns(1)[0].button("Back", key="ob_back", on_click=ob_set_mode, args=(None,))
+
+
 def render_onboarding(model: DemoRecommender, options: list[str]) -> None:
     ss = st.session_state
     onboarding_background()
+    mode = ss.get("ob_mode")
+    if mode != "manual":
+        if mode == "ai":
+            render_ob_ai()
+        else:
+            render_ob_start()
+        ob_storage_script()
+        return
     step = int(ss.get("ob_step", 0))
     heads = [
         ("What do you like to watch?", "Pick as many genres as you like."),
@@ -642,25 +741,19 @@ def render_onboarding(model: DemoRecommender, options: list[str]) -> None:
             st.pills("Era", ERAS, selection_mode="single", key="ob_era", default=ss.get("pref_era", "Any time"), label_visibility="collapsed")
 
     with st.container(key="ob_actions"):
-        cols = st.columns(3 if step > 0 else 2)
+        cols = st.columns(3)
         if step > 0:
             cols[0].button("Back", key="ob_back", on_click=ob_go, args=(step, -1))
+        else:
+            cols[0].button("Back", key="ob_back", on_click=ob_set_mode, args=(None,))
         cols[-2].button("Skip", key="ob_skip", on_click=ob_finish, args=(step,))
         if step < OB_STEPS - 1:
             cols[-1].button("Next", key="ob_next", on_click=ob_go, args=(step, 1))
         else:
             cols[-1].button("Show my picks", key="ob_next", on_click=ob_start_loading, args=(step,))
 
-    # A returning visitor on the bare URL is sent back to their saved answers.
     if ss.pop("ob_forget", False):
         browser_script(f"parent.localStorage.removeItem('{STORAGE_KEY}');")
-    elif step == 0:
-        browser_script(
-            # The sandboxed frame cannot navigate, so the redirect runs in the page itself.
-            "const d=parent.document,e=d.createElement('script');"
-            f"e.textContent=\"(()=>{{const s=localStorage.getItem('{STORAGE_KEY}'),q=new URLSearchParams(location.search);"
-            "if(s&&!q.get('p')){q.set('p',s);location.search=q.toString();}})()\";d.head.appendChild(e);"
-        )
 
 
 if not (BUNDLE / "metadata.json").exists():

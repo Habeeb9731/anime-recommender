@@ -1,0 +1,147 @@
+/* Ask AnimeRec: the mascot and its chat. Black glass, white primary buttons and the brand red, like the app. */
+.ask{--ask-red:#e50914;position:fixed;right:24px;bottom:24px;z-index:8500;display:none;flex-direction:column;align-items:flex-end;gap:12px;pointer-events:none;color:#f2f3f5;font-family:"Inter",system-ui,sans-serif}
+body:has(.hero):not(:has(.ob-head)) .ask{display:flex}
+body:has(.ob-loader,.modal:target) .ask{display:none}
+.ask>*{pointer-events:auto}
+.ask p{margin:0}
+.ask-button{position:relative;width:84px;height:84px;padding:0;border:0;background:none;cursor:pointer;opacity:0;transform:translateY(30px) scale(.4);transition:opacity .3s ease,transform .7s linear(0,.21 6%,.66 14%,1.03 23%,1.14 29%,1.13 35%,.99 47%,.96 54%,1 70%,1.01 82%,1)}
+.ask.is-in .ask-button{opacity:1;transform:none}
+.ask-button::after{content:"";position:absolute;left:20%;right:20%;bottom:-4px;height:9px;border-radius:50%;background:rgba(229,9,20,.32);filter:blur(5px);animation:askShadow 3.2s ease-in-out infinite}
+.ask-button:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:28px}
+.ask-body{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 16px rgba(229,9,20,.28)) drop-shadow(0 2px 3px rgba(0,0,0,.4));animation:askFloat 3.2s ease-in-out infinite}
+.ask-button:hover .ask-body{animation-play-state:paused;transform:translateY(-3px) scale(1.06);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.ask-head{transform-box:view-box;transform-origin:50% 92%;transition:transform .25s ease-out}
+.ask-eye{transform-box:fill-box;transform-origin:center;transition:transform .09s ease}
+.ask.is-blinking .ask-eye{transform:scaleY(.1)}
+.ask-pupil{transition:transform .12s ease-out}
+.ask-paw{transform-box:view-box;transform-origin:80px 78px}
+.ask.is-waving .ask-paw{animation:askWave 1.8s ease-in-out .35s}
+.ask.is-thinking .ask-body{animation:askThink .9s ease-in-out infinite}
+.ask-bubble{position:relative;display:flex;align-items:flex-start;gap:6px;max-width:260px;margin-right:6px;padding:12px 10px 12px 15px;border:1px solid rgba(255,255,255,.14);border-radius:18px 18px 6px 18px;background:rgba(22,22,24,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#f2f3f5;box-shadow:0 18px 40px -16px rgba(0,0,0,.8);font-size:.84rem;line-height:1.45;cursor:pointer;opacity:0;transform:translateY(8px) scale(.9);transform-origin:bottom right;transition:opacity .25s ease,transform .45s cubic-bezier(.3,1.5,.5,1)}
+.ask-bubble.is-in{opacity:1;transform:none}
+.ask-bubble[hidden],.ask-panel[hidden]{display:none}
+.ask-bubble-x{display:grid;flex:none;place-items:center;width:22px;height:22px;margin-top:-3px;padding:0;border:0;border-radius:50%;background:none;color:rgba(255,255,255,.55);cursor:pointer}
+.ask-bubble-x:hover{background:rgba(255,255,255,.1);color:#fff}
+.ask-bubble-x svg,.ask-x svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.ask-panel{position:relative;isolation:isolate;display:flex;flex-direction:column;width:min(390px,calc(100vw - 32px));max-height:min(640px,calc(100dvh - 140px));padding:4px;overflow:hidden;border:1px solid rgba(255,255,255,.13);border-radius:30px;background:radial-gradient(120% 40% at 85% 0%,rgba(229,9,20,.32),transparent 62%),radial-gradient(80% 30% at 0% 100%,rgba(229,9,20,.12),transparent 70%),rgba(12,12,14,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 30px 70px -24px rgba(0,0,0,.9);opacity:0;transform:translateY(14px) scale(.94);transform-origin:bottom right;transition:opacity .22s ease,transform .5s cubic-bezier(.25,1.35,.45,1)}
+.ask-panel.is-open{opacity:1;transform:none}
+.ask-head-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 18px 14px 22px}
+.ask-title{font-size:1.3rem;font-weight:500;letter-spacing:-.02em;line-height:1.1}
+.ask-sub{margin-top:5px!important;color:rgba(255,255,255,.55);font-size:.78rem;line-height:1.4}
+.ask-tools{display:flex;flex:none;gap:6px}
+.ask-x{display:grid;flex:none;place-items:center;width:32px;height:32px;padding:0;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;transition:transform .2s,background .2s}
+.ask-close:hover{transform:rotate(90deg);background:rgba(255,255,255,.16)}
+.ask-clear{opacity:0;pointer-events:none;transform:scale(.6);transition:opacity .2s,transform .3s cubic-bezier(.3,1.5,.5,1),background .2s}
+.ask.has-chat .ask-clear{opacity:1;pointer-events:auto;transform:none}
+.ask.has-chat .ask-clear:hover{background:rgba(255,255,255,.16);transform:rotate(-45deg)}
+.ask-clear svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ask-stage{position:relative;display:flex;flex-direction:column;min-height:0;flex:1;padding:4px 14px 14px}
+.ask-log{display:flex;flex-direction:column;gap:9px;min-height:0;flex:1;margin:0 -4px;padding:0 4px 12px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.ask:not(.has-chat) .ask-log{display:none}
+.ask-intro{padding:26px 2px 16px}
+.ask.has-chat .ask-intro{display:none}
+.ask-help{margin-bottom:16px!important;color:#fff;font-size:1.9rem;font-weight:400;line-height:1.08;letter-spacing:-.04em}
+.ask-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ask-chips button{padding:8px 13px;border:1px solid rgba(255,255,255,.2);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:.8rem;cursor:pointer;transition:background .2s,transform .2s,border-color .2s}
+.ask-chips button:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.34);transform:translateY(-1px)}
+.ask-msg{max-width:90%;padding:9px 13px;border-radius:16px;font-size:.86rem;line-height:1.5;overflow-wrap:anywhere;animation:askMsg .3s cubic-bezier(.2,.8,.2,1)}
+.ask-msg.is-user{align-self:flex-end;border-bottom-right-radius:5px;background:#fff;color:#0b0b0b}
+.ask-msg.is-bot{align-self:flex-start;border-bottom-left-radius:5px;background:rgba(255,255,255,.08);color:#f2f3f5}
+.ask-msg.is-note{color:rgba(255,255,255,.62)}
+.ask-msg.is-wait{display:flex;gap:4px;padding:13px 14px}
+.ask-msg.is-wait i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6);animation:askDot 1s ease-in-out infinite}
+.ask-msg.is-wait i:nth-child(2){animation-delay:.15s}
+.ask-msg.is-wait i:nth-child(3){animation-delay:.3s}
+.ask-picks{display:flex;flex-direction:column;gap:6px;align-self:stretch;margin-top:-2px;animation:askMsg .35s cubic-bezier(.2,.8,.2,1) .06s backwards}
+.ask-card{display:flex;gap:11px;align-items:center;padding:7px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.04);color:#fff!important;text-decoration:none!important;transition:background .2s,border-color .2s,transform .2s}
+.ask-card:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.18);transform:translateX(2px)}
+.ask-art{position:relative;flex:none;display:grid;place-items:center;width:46px;height:66px;overflow:hidden;border-radius:8px;background:linear-gradient(150deg,#3a1a24,#151517);color:rgba(255,255,255,.35);font-size:1.3rem;font-weight:500}
+.ask-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ask-card-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ask-card-text b{font-size:.86rem;font-weight:500;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ask-card-text small{color:rgba(255,255,255,.5);font-size:.72rem}
+.ask-card-text em{color:rgba(255,255,255,.78);font-size:.76rem;font-style:normal;line-height:1.35}
+.ask-apply{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;margin-top:4px;padding:0 18px;border:0;border-radius:999px;background:#fff;color:#000;font-size:.88rem;font-weight:500;cursor:pointer;transition:transform .2s,background .2s}
+.ask-apply:hover:not(:disabled){background:#e9e9e9;transform:translateY(-1px)}
+.ask-apply:disabled{opacity:.6;cursor:progress}
+.ask-apply .ai{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.ask-apply-note{color:rgba(255,255,255,.5);font-size:.72rem;text-align:center;margin-top:2px}
+.ask-links{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:92%;margin-top:-3px;animation:askMsg .3s cubic-bezier(.2,.8,.2,1) .08s backwards}
+.ask-links a{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.08);color:#fff!important;font-size:.78rem;font-weight:500;text-decoration:none!important;transition:background .2s,color .2s,transform .2s}
+.ask-links a:hover{background:#fff;color:#000!important;transform:translateY(-1px)}
+.ask-links a span{transition:transform .2s}
+.ask-links a:hover span{transform:translate(1px,-1px)}
+.ask-links .ai{flex:none;width:14px;height:14px;margin-left:-2px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ask-links .ai .f{fill:currentColor;stroke:none}
+.ask-form{display:flex;align-items:center;gap:8px}
+.ask-form input{flex:1;min-width:0;height:52px;padding:0 20px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.08);color:#fff;font-size:.95rem;outline:none;transition:border-color .2s,background .2s}
+.ask-form input::placeholder{color:rgba(255,255,255,.45)}
+.ask-form input:focus{border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.11)}
+.ask-send{display:grid;flex:none;place-items:center;width:52px;height:52px;padding:0;border:0;border-radius:50%;background:#fff;color:#000;cursor:pointer;transition:transform .2s,background .2s,color .2s}
+.ask-send svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ask-send:hover:not(:disabled){background:var(--ask-red);color:#fff;transform:translateY(-1px)}
+.ask-send:disabled,.ask-form input:disabled{cursor:not-allowed;opacity:.45}
+@keyframes askFloat{50%{transform:translateY(-5px)}}
+@keyframes askShadow{50%{transform:scaleX(.82);opacity:.7}}
+@keyframes askThink{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-3px)}}
+@keyframes askWave{0%,100%{transform:rotate(0)}15%{transform:rotate(-38deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(-38deg)}60%{transform:rotate(-12deg)}75%{transform:rotate(-30deg)}}
+@keyframes askMsg{from{opacity:0;transform:translateY(6px)}}
+@keyframes askDot{0%,80%,100%{opacity:.35;transform:none}40%{opacity:1;transform:translateY(-3px)}}
+/* AI onboarding, drawn into the app's "Describe it" screen */
+.ai-ob-mount{max-width:640px;margin:1.8rem auto 0;padding:0 1.2rem}
+.aiob{display:flex;flex-direction:column;gap:16px;font-family:"Inter",system-ui,sans-serif;animation:askMsg .5s .2s cubic-bezier(.2,.8,.2,1) both}
+.aiob-box{padding:4px;border:1px solid rgba(255,255,255,.1);border-radius:22px;background:linear-gradient(180deg,rgba(229,9,20,.2),rgba(229,9,20,.06));box-shadow:0 30px 60px -28px rgba(229,9,20,.5)}
+.aiob-strip{display:flex;align-items:center;gap:7px;padding:7px 12px 9px;color:rgba(255,255,255,.86);font-size:.78rem}
+.aiob-strip span{color:rgba(255,255,255,.5)}
+.aiob-strip svg{width:13px;height:13px;fill:#fff}
+.aiob-inner{display:flex;flex-direction:column;gap:8px;padding:16px 14px 12px 18px;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:#0b0b0d;transition:border-color .2s}
+.aiob-box:focus-within .aiob-inner{border-color:rgba(255,255,255,.28)}
+.aiob-inner textarea{width:100%;min-height:62px;padding:0;border:0;outline:0;resize:none;background:none;color:#fff;font:400 .98rem/1.55 "Inter",system-ui,sans-serif}
+.aiob-inner textarea::placeholder{color:rgba(255,255,255,.38)}
+.aiob-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.aiob-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:rgba(255,255,255,.6);font-size:.72rem}
+.aiob-pill svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.aiob-go{display:grid;place-items:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:var(--ask-red,#e50914);color:#fff;cursor:pointer;box-shadow:0 6px 18px -6px rgba(229,9,20,.8);transition:transform .2s,background .2s}
+.aiob-go:hover:not(:disabled){background:#ff1f2b;transform:translateY(-1px)}
+.aiob-go:disabled{cursor:progress;opacity:.7}
+.aiob-go svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.aiob-examples{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.aiob-examples button{display:flex;flex-direction:column;gap:6px;padding:13px 14px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(12,12,14,.62);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#fff;text-align:left;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
+.aiob-examples button:hover{background:rgba(30,30,34,.78);border-color:rgba(255,255,255,.2);transform:translateY(-2px)}
+.aiob-examples b{display:flex;align-items:center;gap:7px;font-size:.86rem;font-weight:500}
+.aiob-examples b svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.aiob-examples span{color:rgba(255,255,255,.5);font-size:.74rem;line-height:1.4}
+@media(max-width:640px){.aiob-examples{grid-template-columns:1fr}.aiob-examples button{flex-direction:row;align-items:baseline;gap:10px}.aiob-examples b{flex:none}}
+.aiob-note{margin:0;color:rgba(255,255,255,.75);font-size:.9rem;text-align:center}
+.aiob-loader{position:fixed;inset:0;z-index:2147482000;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:#000;opacity:0;transition:opacity .35s ease;font-family:"Inter",system-ui,sans-serif}
+.aiob-loader.is-in{opacity:1}
+.aiob-glow{position:absolute;left:50%;top:44%;width:min(1100px,150vw);height:360px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(229,9,20,.95),rgba(229,9,20,.55) 45%,rgba(140,0,6,.18) 75%,transparent);filter:blur(28px);pointer-events:none}
+.aiob-reel{--w:150px;--gap:14px;--push:24px;position:relative;width:100%;height:300px;margin-top:-4vh}
+.aiob-reel-card{position:absolute;left:50%;top:50%;width:var(--w);aspect-ratio:2/3;margin:calc(var(--w)*-.75) 0 0 calc(var(--w)/-2);border-radius:12px;overflow:hidden;background:#1b1b1f center/cover;box-shadow:0 18px 40px rgba(0,0,0,.6);transform:translateX(calc(var(--s)*(var(--w) + var(--gap)) + var(--s)*var(--push))) scale(.86);filter:brightness(.48) saturate(.8);transition:transform .7s cubic-bezier(.6,0,.2,1),filter .7s ease,opacity .5s ease}
+.aiob-reel-card.is-center{z-index:2;transform:translateX(0) scale(1.32);filter:none;box-shadow:0 24px 60px rgba(0,0,0,.75)}
+.aiob-reel.is-swapping .aiob-reel-card{opacity:0;transition:transform .7s cubic-bezier(.6,0,.2,1),filter .7s ease,opacity .3s ease}
+.aiob-reel-card.is-wrap{transition:none;opacity:0}
+.aiob-reel-card::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.82) 0%,rgba(0,0,0,.2) 42%,transparent 60%)}
+.aiob-score{position:absolute;top:8px;right:9px;z-index:1;color:#fff;font-size:.78rem;font-weight:500;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+.aiob-foot{position:absolute;left:10px;right:10px;bottom:9px;z-index:1;display:flex;flex-direction:column;gap:2px}
+.aiob-foot b{color:#fff;font-size:.8rem;font-weight:500;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.aiob-foot small{color:rgba(255,255,255,.7);font-size:.62rem}
+.aiob-msg{position:relative;min-height:2.2rem;margin:3.2rem 0 0;padding:0 1rem;color:#fff;font-size:clamp(1.15rem,2.2vw,1.6rem);font-weight:500;text-align:center}
+.aiob-msg.is-swap{animation:askMsg .4s cubic-bezier(.2,.8,.2,1)}
+.aiob-bar{position:relative;width:min(70vw,340px);height:3px;margin-top:1.1rem;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.aiob-bar i{display:block;height:100%;width:100%;background:var(--ask-red,#e50914);transform-origin:left;transform:scaleX(.05);transition:transform 8s cubic-bezier(.1,.6,.3,1)}
+.aiob-loader.is-in .aiob-bar i{transform:scaleX(.8)}
+.aiob-loader.is-found .aiob-bar i{transform:scaleX(1);transition-duration:3.6s}
+@media(max-width:640px){.aiob-reel{--w:104px;--gap:8px;--push:10px;height:240px}.aiob-glow{height:260px}}
+@media(prefers-reduced-motion:reduce){.aiob-reel-card{transition:none}}
+@media(max-width:640px){
+  .ask{right:12px;bottom:calc(76px + env(safe-area-inset-bottom))}
+  .ask-button{width:64px;height:64px}
+  .ask-panel{width:calc(100vw - 24px);max-height:calc(100dvh - 160px);border-radius:26px}
+  .ask-head-row{padding:14px 14px 12px 18px}
+  .ask-intro{padding-top:16px}
+  .ask-help{font-size:1.65rem}
+  .ask-form input,.ask-send{height:48px}
+  .ask-send{width:48px}
+}
+@media(prefers-reduced-motion:reduce){.ask-body,.ask-button::after,.ask-msg,.ask-paw,.ask-picks{animation:none!important}.ask-button,.ask-panel,.ask-bubble{transition:opacity .2s!important}}
